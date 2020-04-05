@@ -38,7 +38,7 @@ var version string
 
 func init() {
 	Plugin.V = version
-	Plugin.N = "authmongo"
+	Plugin.N = "mongo"
 	Plugin.T = "auth"
 }
 
