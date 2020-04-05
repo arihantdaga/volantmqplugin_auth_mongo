@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/VolantMQ/vlapi/vlauth"
 	"github.com/go-bongo/bongo"
-	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2/bson" // TODO: Remove this, auto imported in vscode
 )
 
 type authProvider struct {
