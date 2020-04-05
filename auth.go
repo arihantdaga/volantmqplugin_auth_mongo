@@ -13,22 +13,28 @@ type authProvider struct {
 
 type UserModel struct {
 	bongo.DocumentBase `bson:",inline"`
-	Username           string `json:"username" bson:"username"`
-	Password           string `json:"password" bson:"password"`
-	SubscriptionList   bool   `json:"subscription_list" bson:"subscription_list"`
-	PublishList        bool   `json:"publish_list" bson:"publish_list"`
+	Username           string   `json:"username" bson:"username"`
+	Password           string   `json:"password" bson:"password"`
+	SubscriptionList   []string `json:"subscription_list" bson:"subscription_list"`
+	PublishList        []string `json:"publish_list" bson:"publish_list"`
 }
 
 func (p *authProvider) Finduser(username string, password string) (user UserModel, error error) {
-
 	err := p.connection.Collection(p.cfg.CollectionName).FindOne(bson.M{p.cfg.UsernameField: username, p.cfg.PasswordField: password}, &user)
 	if err != nil {
 		error = err
 		return user, error
-	} else {
-		return user, nil
 	}
+	return user, nil
+}
 
+// We cannot use function FindUser with blank password because that could lead to unathorized access by sending blank password.
+func (p *authProvider) FindUserByUsername(username string) (user UserModel, err error) {
+	err = p.connection.Collection(p.cfg.CollectionName).FindOne(bson.M{p.cfg.UsernameField: username}, &user)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
 }
 
 func (p *authProvider) Connect() error {
@@ -57,8 +63,23 @@ func (p *authProvider) Password(clientID, username, password string) error {
 	return vlauth.StatusAllow
 }
 
-func (p *authProvider) ACL(clientID, user, topic string, access vlauth.AccessType) error {
-	return vlauth.StatusAllow
+func (p *authProvider) ACL(clientID, username, topic string, access vlauth.AccessType) error {
+	// fmt.Printf("Allowing permission for %s, %s, %s %d \n", clientID, user, topic, access)
+	user, err := p.FindUserByUsername(username)
+	if err != nil {
+		return vlauth.StatusDeny
+	}
+	permission := access.Type()
+	allowed := false
+	if permission == "write" {
+		allowed = IsTopicAllowed(topic, user.PublishList)
+	} else {
+		allowed = IsTopicAllowed(topic, user.SubscriptionList)
+	}
+	if err == nil && allowed {
+		return vlauth.StatusAllow
+	}
+	return vlauth.StatusDeny
 }
 
 func (p *authProvider) Shutdown() error {
