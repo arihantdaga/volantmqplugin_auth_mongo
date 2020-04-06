@@ -1,5 +1,5 @@
-# VolantMq Plugin Auth Mongo
-Volantmq Plugin for supporting Authentication using MongoDb. 
+# VolantMQ Plugin Auth Mongo
+VolantMQ Plugin for supporting Authentication using MongoDb. 
 
 
 If you are using Mongodb in your application. You can easily connect your database and use it as backend for authentication in VolantMQ. 
