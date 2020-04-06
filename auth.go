@@ -15,12 +15,12 @@ type UserModel struct {
 	bongo.DocumentBase `bson:",inline"`
 	Username           string   `json:"username" bson:"username"`
 	Password           string   `json:"password" bson:"password"`
-	SubscriptionList   []string `json:"subscription_list" bson:"subscription_list"`
-	PublishList        []string `json:"publish_list" bson:"publish_list"`
+	SubscriptionList   []string `json:"subscribe" bson:"subscribe"`
+	PublishList        []string `json:"publish" bson:"publish"`
 }
 
 func (p *authProvider) Finduser(username string, password string) (user UserModel, error error) {
-	err := p.connection.Collection(p.cfg.CollectionName).FindOne(bson.M{p.cfg.UsernameField: username, p.cfg.PasswordField: password}, &user)
+	err := p.connection.Collection(p.cfg.CollectionName).FindOne(bson.M{username: username, password: password}, &user)
 	if err != nil {
 		error = err
 		return user, error
@@ -30,7 +30,7 @@ func (p *authProvider) Finduser(username string, password string) (user UserMode
 
 // We cannot use function FindUser with blank password because that could lead to unathorized access by sending blank password.
 func (p *authProvider) FindUserByUsername(username string) (user UserModel, err error) {
-	err = p.connection.Collection(p.cfg.CollectionName).FindOne(bson.M{p.cfg.UsernameField: username}, &user)
+	err = p.connection.Collection(p.cfg.CollectionName).FindOne(bson.M{username: username}, &user)
 	if err != nil {
 		return user, err
 	}

@@ -19,8 +19,6 @@ type config struct {
 	MongodbBaseURI string `mapstructure:"mongoURI,omitempty" yaml:"mongoURI,omitempty" json:"mongoURI,omitempty" default:""`
 	DatabaseName   string `mapstructure:"database,omitempty" yaml:"database,omitempty" json:"database,omitempty" default:""`
 	CollectionName string `mapstructure:"collection,omitempty" yaml:"collection,omitempty" json:"collection,omitempty" default:""`
-	UsernameField  string `mapstructure:"usernameField,omitempty" yaml:"usernameField,omitempty" json:"usernameField,omitempty" default:""`
-	PasswordField  string `mapstructure:"passwordField,omitempty" yaml:"passwordField,omitempty" json:"passwordField,omitempty" default:""`
 }
 
 type authImpl struct {
